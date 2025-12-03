@@ -1,0 +1,12 @@
+﻿@model IEnumerable<IItemValidating>
+
+<h2>Catalog</h2>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-3">
+            @await Html.PartialAsync(item.GetCardPartial(), item)
+        </div>
+    }
+</div>
