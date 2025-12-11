@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Bulk Import";
+}
+
+<h2>Bulk Import JSON</h2>
+
+<form asp-action="BulkImport" asp-controller="BulkImport" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label>Select JSON File</label>
+        <input type="file" name="jsonFile" class="form-control" accept=".json" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Upload & Preview</button>
+</form>

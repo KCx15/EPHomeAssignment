@@ -1,0 +1,11 @@
+﻿@model IEnumerable<MenuItem>
+
+<h2>Pending Menu Items</h2>
+
+@foreach (var m in Model)
+{
+    <form method="post" asp-action="Approve" asp-route-id="@m.Id">
+        <p>@m.Title - @m.Price €</p>
+        <button class="btn btn-success">Approve</button>
+    </form>
+}

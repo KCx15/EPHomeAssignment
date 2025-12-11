@@ -1,0 +1,9 @@
+﻿@model IEnumerable<Restaurant>
+
+<h2>Your Restaurants</h2>
+
+@foreach (var r in Model)
+{
+    <a asp-action="RestaurantMenuItems" asp-route-id="@r.Id">@r.Name</a>
+    <br />
+}

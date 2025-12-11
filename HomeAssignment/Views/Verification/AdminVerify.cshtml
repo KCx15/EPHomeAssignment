@@ -1,0 +1,11 @@
+﻿@model IEnumerable<Restaurant>
+
+<h2>Pending Restaurants</h2>
+
+@foreach (var r in Model)
+{
+    <form method="post" asp-action="Approve" asp-route-id="@r.Id">
+        <p>@r.Name (@r.OwnerEmailAddress)</p>
+        <button class="btn btn-success">Approve</button>
+    </form>
+}

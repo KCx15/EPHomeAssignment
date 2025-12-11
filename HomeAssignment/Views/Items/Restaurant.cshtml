@@ -1,0 +1,13 @@
+﻿@model IEnumerable<MenuItem>
+@{
+    var restaurant = ViewBag.Restaurant as Restaurant;
+}
+
+<h2>@restaurant.Name</h2>
+
+<ul>
+    @foreach (var m in Model)
+    {
+        <li>@m.Title - @m.Price €</li>
+    }
+</ul>

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<HomeAssignment.Models.IItemValidating>
+
+@{
+    ViewData["Title"] = "Preview Imported Items";
+}
+
+<h1 class="mb-4">Preview Imported Items</h1>
+
+<table class="table table-bordered table-striped table-hover shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Type</th>
+            <th>Name / Title</th>
+            <th>Owner Email / Restaurant Id</th>
+            <th>Price</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            if (item is HomeAssignment.Models.Restaurant r)
+            {
+                <tr>
+                    <td>Restaurant</td>
+                    <td>@r.Name</td>
+                    <td>@r.OwnerEmailAddress</td>
+                    <td>-</td>
+                    <td>@r.Status</td>
+                </tr>
+            }
+            else if (item is HomeAssignment.Models.MenuItem m)
+            {
+                <tr>
+                    <td>MenuItem</td>
+                    <td>@m.Title</td>
+                    <td>@m.RestaurantId</td>
+                    <td>@m.Price.ToString("C")</td>
+                    <td>@m.Status</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<p class="fw-bold mt-3">Data stored temporarily. Nothing saved to DB yet.</p>
+
+<a class="btn btn-secondary mt-2" asp-controller="BulkImport" asp-action="Index">Back to Upload</a>

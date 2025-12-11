@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Bulk Import";
+}
+
+<h1 class="mb-4">Bulk Import</h1>
+
+<div class="card p-4 shadow-sm">
+    <form asp-controller="BulkImport" asp-action="BulkImport" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="jsonFile" class="form-label">Upload JSON File:</label>
+            <input type="file" class="form-control" id="jsonFile" name="jsonFile" />
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+</div>
