@@ -1,11 +1,31 @@
-﻿@model IEnumerable<MenuItem>
+﻿@model IEnumerable<HomeAssignment.Models.MenuItem>
 
 <h2>Pending Menu Items</h2>
 
-@foreach (var m in Model)
-{
-    <form method="post" asp-action="Approve" asp-route-id="@m.Id">
-        <p>@m.Title - @m.Price €</p>
-        <button class="btn btn-success">Approve</button>
-    </form>
-}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Price</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.Title</td>
+                <td>@m.Price.ToString("C")</td>
+                <td>
+                    <form method="post"
+                          asp-controller="Verification"
+                          asp-action="Approve">
+                        
+                        <input type="hidden" name="id" value="@m.Id" />
+                        <button class="btn btn-success btn-sm">Approve</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

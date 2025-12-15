@@ -1,24 +1,100 @@
-﻿@{
+﻿@inject IConfiguration Config
+@{
     ViewData["Title"] = "Home";
-    var userEmail = Context.Session.GetString("UserEmail");
+    var email = Context.Session.GetString("UserEmail");
+    var adminEmail = Config["SiteAdminEmail"];
+    var isLoggedIn = !string.IsNullOrEmpty(email);
+    var isAdmin = isLoggedIn && email.Equals(adminEmail, StringComparison.OrdinalIgnoreCase);
 }
 
-<div class="text-center mt-5">
-    <h1>Welcome to HomeAssignment</h1>
-    <p>Your restaurant catalog and bulk import app.</p>
+<div class="p-4 p-md-5 mb-4 bg-white border rounded-3 shadow-sm">
+    <div class="container-fluid py-2">
+        <h1 class="display-6 fw-semibold mb-2">HomeAssignment</h1>
+        <p class="text-muted mb-4">
+            Bulk import restaurants and menu items, upload images, approve items, and browse the verified catalog.
+        </p>
 
-    @if (string.IsNullOrEmpty(userEmail))
-    {
-        <div class="mt-4">
-            <a class="btn btn-primary me-2" href="/Auth/Login">Login</a>
-            <a class="btn btn-success" href="/Auth/Register">Register</a>
+        @if (!isLoggedIn)
+        {
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" asp-controller="Auth" asp-action="Login">Login</a>
+                <a class="btn btn-warning" asp-controller="Auth" asp-action="Register">Register</a>
+                <a class="btn btn-outline-secondary" asp-controller="Items" asp-action="Catalog">Browse Catalog</a>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+                <span class="badge rounded-pill text-bg-secondary">@email</span>
+                @if (isAdmin)
+                {
+                    <span class="badge rounded-pill text-bg-danger">Admin</span>
+                }
+                else
+                {
+                    <span class="badge rounded-pill text-bg-primary">User</span>
+                }
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-success" asp-controller="BulkImport" asp-action="Index">Bulk Import</a>
+                <a class="btn btn-outline-secondary" asp-controller="Items" asp-action="Catalog">Open Catalog</a>
+
+                @if (isAdmin)
+                {
+                    <a class="btn btn-danger" asp-controller="Verification" asp-action="Index">Admin Verification</a>
+                }
+                else
+                {
+                    <a class="btn btn-primary" asp-controller="Verification" asp-action="Index">Owner Verification</a>
+                }
+
+                <a class="btn btn-outline-dark" asp-controller="Auth" asp-action="Logout">Logout</a>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="bg-white border rounded-3 p-3 h-100">
+            <h5 class="fw-semibold">Catalog</h5>
+            <p class="text-muted mb-3">Browse approved restaurants and menu items.</p>
+            <a class="btn btn-outline-secondary btn-sm" asp-controller="Items" asp-action="Catalog">View Catalog</a>
         </div>
-    }
-    else
-    {
-        <div class="mt-4">
-            <span class="me-3">Hello, @userEmail!</span>
-            <a class="btn btn-danger" href="/Auth/Logout">Logout</a>
+    </div>
+
+    <div class="col-md-4">
+        <div class="bg-white border rounded-3 p-3 h-100">
+            <h5 class="fw-semibold">Bulk Import</h5>
+            <p class="text-muted mb-3">Upload JSON and images ZIP, then commit.</p>
+            @if (isLoggedIn)
+            {
+                <a class="btn btn-outline-success btn-sm" asp-controller="BulkImport" asp-action="Index">Go to Bulk Import</a>
+            }
+            else
+            {
+                <a class="btn btn-outline-primary btn-sm" asp-controller="Auth" asp-action="Login">Login to Import</a>
+            }
         </div>
-    }
+    </div>
+
+    <div class="col-md-4">
+        <div class="bg-white border rounded-3 p-3 h-100">
+            <h5 class="fw-semibold">Verification</h5>
+            <p class="text-muted mb-3">
+                Approve pending restaurants (admin) or menu items (owner).
+            </p>
+            @if (isLoggedIn)
+            {
+                <a class="btn btn-outline-primary btn-sm" asp-controller="Verification" asp-action="Index">
+                    @(isAdmin ? "Admin Verification" : "Owner Verification")
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-outline-primary btn-sm" asp-controller="Auth" asp-action="Login">Login to Verify</a>
+            }
+        </div>
+    </div>
 </div>

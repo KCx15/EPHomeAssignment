@@ -8,39 +8,45 @@ namespace HomeAssignment.Controllers
     {
         private readonly IItemsRepository _db;
 
-        public ItemsController([FromKeyedServices("db")] IItemsRepository repo)
+        public ItemsController([FromKeyedServices("db")] IItemsRepository dbRepo)
         {
-            _db = repo;
+            _db = dbRepo;
         }
 
-        // Shows approved restaurants
-        public async Task<IActionResult> Catalog()
+        // GET /Items/Catalog?mode=restaurants
+        // GET /Items/Catalog?mode=menu&restaurantId=5
+        public async Task<IActionResult> Catalog(string mode = "restaurants", int? restaurantId = null)
         {
-            var items = await _db.GetAsync();
-            var restaurants = items
-                .OfType<Restaurant>()
-                .Where(r => r.Status == ItemStatus.Approved)
-                .ToList();
+            var allItems = await _db.GetAsync();
+            List<IItemValidating> model;
 
-            return View(restaurants);
-        }
+            if (string.Equals(mode, "menu", StringComparison.OrdinalIgnoreCase) && restaurantId.HasValue)
+            {
+                // Approved menu items for this restaurant
+                model = allItems
+                    .OfType<MenuItem>()
+                    .Where(m => m.RestaurantId == restaurantId.Value
+                                && m.Status == ItemStatus.Approved)
+                    .Cast<IItemValidating>()
+                    .ToList();
 
-        // Shows approved menu items belonging to a restaurant
-        public async Task<IActionResult> Restaurant(int id)
-        {
-            var items = await _db.GetAsync();
+                ViewBag.Mode = "menu";
+                ViewBag.RestaurantId = restaurantId;
+            }
+            else
+            {
+                // Default: approved restaurants
+                model = allItems
+                    .OfType<Restaurant>()
+                    .Where(r => r.Status == ItemStatus.Approved)
+                    .Cast<IItemValidating>()
+                    .ToList();
 
-            var restaurant = items
-                .OfType<Restaurant>()
-                .FirstOrDefault(r => r.Id == id);
+                ViewBag.Mode = "restaurants";
+                ViewBag.RestaurantId = null;
+            }
 
-            var menuItems = items
-                .OfType<MenuItem>()
-                .Where(m => m.RestaurantId == id && m.Status == ItemStatus.Approved)
-                .ToList();
-
-            ViewBag.Restaurant = restaurant;
-            return View(menuItems);
+            return View(model);  // Views/Items/Catalog.cshtml
         }
     }
 }

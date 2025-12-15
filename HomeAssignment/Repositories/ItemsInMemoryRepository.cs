@@ -1,9 +1,7 @@
 ﻿using HomeAssignment.Models;
 using HomeAssignment.Repositories;
 using Microsoft.Extensions.Caching.Memory;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 public class ItemsInMemoryRepository : IItemsRepository
 {
@@ -32,21 +30,12 @@ public class ItemsInMemoryRepository : IItemsRepository
         _cache.Remove(CacheKey);
     }
 
-    
-    public Task Approve(int id)
+
+    public Task Approve(string id)
     {
-        _cache.TryGetValue(CacheKey, out IEnumerable<IItemValidating> items);
-        if (items == null) return Task.CompletedTask;
-
-        foreach (var item in items)
-        {
-            if (item is Restaurant r && r.Id == id)
-                r.Status = ItemStatus.Approved;
-            else if (item is MenuItem m && m.Id.GetHashCode() == id)
-                m.Status = ItemStatus.Approved;
-        }
-
-        _cache.Set(CacheKey, items);
+        // In-memory repo is used only for temporary storage before DB commit.
+        // Approvals are always done on the DB repository, so nothing to do here.
         return Task.CompletedTask;
     }
+
 }

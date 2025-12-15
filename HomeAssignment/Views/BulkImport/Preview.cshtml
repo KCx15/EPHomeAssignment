@@ -19,12 +19,18 @@
     <tbody>
         @foreach (var item in Model)
         {
-            if (item is HomeAssignment.Models.Restaurant r)
+            @if (item is HomeAssignment.Models.Restaurant r)
             {
                 <tr>
                     <td>Restaurant</td>
-                    <td>@r.Name</td>
-                    <td>@r.OwnerEmailAddress</td>
+                    <td>
+                        <div class="fw-semibold">@r.Name</div>
+                        <div class="text-muted small">@r.Description</div>
+                    </td>
+                    <td>
+                        <div class="small"><span class="text-muted">Owner:</span> @r.OwnerEmailAddress</div>
+                        <div class="small"><span class="text-muted">ExternalId:</span> @r.ExternalId</div>
+                    </td>
                     <td>-</td>
                     <td>@r.Status</td>
                 </tr>
@@ -33,15 +39,42 @@
             {
                 <tr>
                     <td>MenuItem</td>
-                    <td>@m.Title</td>
-                    <td>@m.RestaurantId</td>
-                    <td>@m.Price.ToString("C")</td>
+                    <td>
+                        <div class="fw-semibold">@m.Title</div>
+                        <div class="text-muted small">ExternalId: @m.ExternalId</div>
+                    </td>
+                    <td>
+                        <div class="small"><span class="text-muted">Restaurant:</span> @m.RestaurantExternalId</div>
+                    </td>
+                    <td>@m.Price.ToString("0.00") @(string.IsNullOrWhiteSpace(m.Currency) ? "" : m.Currency)</td>
+
                     <td>@m.Status</td>
                 </tr>
             }
         }
     </tbody>
-</table>
+  </table>
+<hr />
+
+<form asp-controller="BulkImport"
+      asp-action="DownloadImagesZip"
+      method="post"
+      class="mb-3">
+    <button type="submit" class="btn btn-secondary">
+        Download Images ZIP Template
+    </button>
+</form>
+
+<form asp-controller="BulkImport"
+      asp-action="CommitToDatabase"
+      method="post"
+      enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="imagesZip" class="form-label">Upload Images ZIP (optional)</label>
+        <input type="file" name="imagesZip" id="imagesZip" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-success">Commit to Database</button>
+</form>
 
 <p class="fw-bold mt-3">Data stored temporarily. Nothing saved to DB yet.</p>
 

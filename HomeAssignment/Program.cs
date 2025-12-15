@@ -1,5 +1,6 @@
 using HomeAssignment.Data;
 using HomeAssignment.Factories;
+using HomeAssignment.Filters;
 using HomeAssignment.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 builder.Services.AddMemoryCache();
 
+
+
 builder.Services.AddKeyedScoped<IItemsRepository, ItemsInMemoryRepository>("memory");
 builder.Services.AddKeyedScoped<IItemsRepository, ItemsDbRepository>("db");
 
@@ -21,6 +24,8 @@ builder.Services.AddScoped<ItemsInMemoryRepository>();
 builder.Services.AddScoped<ItemsDbRepository>();
 
 builder.Services.AddSingleton<ImportItemFactory>();
+
+builder.Services.AddScoped<ApprovalAuthorizationFilter>();
 
 
 var app = builder.Build();
@@ -37,7 +42,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseSession();           // Must be before authorization
+app.UseSession();           
 app.UseAuthorization();
 
 // Map routes

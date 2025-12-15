@@ -18,16 +18,24 @@ namespace HomeAssignment.Controllers
             _db = dbRepo;
         }
 
+        // -------------------------------------------------------------
+        // MAIN VERIFICATION PAGE
+        // Admin -> sees ALL pending restaurants
+        // Owner -> sees OWN restaurants (not approved)
+        // -------------------------------------------------------------
         public async Task<IActionResult> Index()
         {
             var email = HttpContext.Session.GetString("UserEmail");
-            if (email == null) return RedirectToAction("Login", "Auth");
+            if (email == null)
+                return RedirectToAction("Login", "Auth");
 
             var items = await _db.GetAsync();
 
-            if (email == _adminEmail)
+            // ---------------------------------------------------------
+            // ADMIN VIEW
+            // ---------------------------------------------------------
+            if (email.Equals(_adminEmail, StringComparison.OrdinalIgnoreCase))
             {
-                // Show pending restaurants
                 var pendingRestaurants = items
                     .OfType<Restaurant>()
                     .Where(r => r.Status == ItemStatus.Pending)
@@ -35,36 +43,51 @@ namespace HomeAssignment.Controllers
 
                 return View("AdminVerify", pendingRestaurants);
             }
-            else
-            {
-                // Show owned restaurants
-                var ownedRestaurants = items
-                    .OfType<Restaurant>()
-                    .Where(r => r.OwnerEmailAddress == email)
-                    .ToList();
 
-                return View("OwnerRestaurants", ownedRestaurants);
-            }
+            // ---------------------------------------------------------
+            // OWNER VIEW
+            // ---------------------------------------------------------
+            var ownedRestaurants = items
+                .OfType<Restaurant>()
+                .Where(r => r.OwnerEmailAddress.Equals(email, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            return View("OwnerRestaurants", ownedRestaurants);
         }
 
+        // -------------------------------------------------------------
+        // OWNER VIEW → Click Restaurant → See Pending MenuItems
+        // -------------------------------------------------------------
         public async Task<IActionResult> RestaurantMenuItems(int id)
         {
             var items = await _db.GetAsync();
-            var pendingMenu = items
+
+            var pendingMenuItems = items
                 .OfType<MenuItem>()
                 .Where(m => m.RestaurantId == id && m.Status == ItemStatus.Pending)
                 .ToList();
 
-            return View("OwnerVerifyMenuItems", pendingMenu);
+            return View("OwnerVerifyMenuItems", pendingMenuItems);
         }
 
+        // -------------------------------------------------------------
+        // APPROVE
+        // Uses ActionFilter to confirm user is in GetValidators()
+        // -------------------------------------------------------------
         [HttpPost]
         [ServiceFilter(typeof(ApprovalAuthorizationFilter))]
-        public async Task<IActionResult> Approve(int id)
+        public async Task<IActionResult> Approve(string id)
         {
             await _db.Approve(id);
+
+            var email = HttpContext.Session.GetString("UserEmail");
+
+            // If admin → stay in admin verification
+            if (email == _adminEmail)
+                return RedirectToAction("Index");
+
+            // If owner → return to owned restaurants
             return RedirectToAction("Index");
         }
-
     }
 }

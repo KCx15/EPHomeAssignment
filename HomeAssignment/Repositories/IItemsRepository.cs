@@ -7,6 +7,6 @@ namespace HomeAssignment.Repositories
         Task SaveAsync(IEnumerable<IItemValidating> items);
         Task<IEnumerable<IItemValidating>> GetAsync();
 
-        Task Approve(int id);
+        Task Approve(string id);
     }
 }

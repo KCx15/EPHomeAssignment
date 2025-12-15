@@ -1,10 +1,25 @@
-﻿@model MenuItem
+﻿@model HomeAssignment.Models.MenuItem
 
-<div class="card">
-    <div class="card-body">
-        <h5>@Model.Title</h5>
-        <p>Price: @Model.Price</p>
-        <p>Restaurant ID: @Model.RestaurantId</p>
-        <p>Status: @Model.Status</p>
-    </div>
-</div>
+<tr>
+    <td style="width: 90px;">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl"
+                 alt="@Model.Title"
+                 class="img-thumbnail"
+                 style="width: 70px; height: 70px; object-fit: cover;" />
+        }
+    </td>
+
+    <td class="align-middle">
+        <strong>@Model.Title</strong>
+    </td>
+
+    <td class="align-middle">
+        @Model.Price.ToString("0.00")
+        @if (!string.IsNullOrWhiteSpace(Model.Currency))
+        {
+            <span>@Model.Currency</span>
+        }
+    </td>
+</tr>
