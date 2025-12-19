@@ -1,11 +1,48 @@
-﻿@model IEnumerable<Restaurant>
+﻿@model IEnumerable<HomeAssignment.Models.Restaurant>
 
-<h2>Pending Restaurants</h2>
+<h2 class="mb-3">Pending Restaurants</h2>
 
-@foreach (var r in Model)
+@if (!Model.Any())
 {
-    <form method="post" asp-action="Approve" asp-route-id="@r.Id">
-        <p>@r.Name (@r.OwnerEmailAddress)</p>
-        <button class="btn btn-success">Approve</button>
+    <div class="alert alert-info">No pending restaurants.</div>
+}
+else
+{
+    <form method="post" asp-action="Approve">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th style="width:60px;">
+                        <input type="checkbox" id="selectAllRestaurants" />
+
+                    </th>
+                    <th>Name</th>
+                    <th>Owner Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="ids" value="@r.Id" class="itemCheck" />
+                        </td>
+                        <td class="fw-semibold">@r.Name</td>
+                        <td>@r.OwnerEmailAddress</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success">
+            Approve Selected
+        </button>
     </form>
+
+    <script>
+               document.getElementById("selectAllRestaurants").addEventListener("change", function () {
+            document.querySelectorAll(".itemCheck").forEach(cb => cb.checked = this.checked);
+        });
+
+    </script>
 }

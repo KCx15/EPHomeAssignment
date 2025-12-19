@@ -76,17 +76,14 @@ namespace HomeAssignment.Controllers
         // -------------------------------------------------------------
         [HttpPost]
         [ServiceFilter(typeof(ApprovalAuthorizationFilter))]
-        public async Task<IActionResult> Approve(string id)
+        public async Task<IActionResult> Approve(List<string> ids)
         {
-            await _db.Approve(id);
+            if (ids == null || ids.Count == 0)
+                return BadRequest("No items selected.");
 
-            var email = HttpContext.Session.GetString("UserEmail");
+            foreach (var id in ids)
+                await _db.Approve(id);
 
-            // If admin → stay in admin verification
-            if (email == _adminEmail)
-                return RedirectToAction("Index");
-
-            // If owner → return to owned restaurants
             return RedirectToAction("Index");
         }
     }
