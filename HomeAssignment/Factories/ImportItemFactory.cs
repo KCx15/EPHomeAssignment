@@ -61,7 +61,7 @@ namespace HomeAssignment.Factories
                         ExternalId = externalId ?? Guid.NewGuid().ToString(),
                         Title = GetString("title") ?? "(Untitled)",
                         Price = price,
-                        Currency = GetString("currency"),          // ✅ ADD THIS
+                        Currency = GetString("currency"),          
 
                         RestaurantExternalId = restaurantExternalId ?? "",
                         RestaurantId = 0,

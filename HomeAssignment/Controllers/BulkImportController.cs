@@ -15,16 +15,13 @@ namespace HomeAssignment.Controllers
             _factory = factory;
         }
 
-        // GET: /BulkImport
         [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
-        // ---------------------------------------------------------
-        // STEP 1: Upload JSON → Parse → Store in MEMORY (NOT DB)
-        // ---------------------------------------------------------
+
         [HttpPost]
         public async Task<IActionResult> BulkImport(
             IFormFile jsonFile,
@@ -37,19 +34,14 @@ namespace HomeAssignment.Controllers
             using (var reader = new StreamReader(jsonFile.OpenReadStream()))
                 json = await reader.ReadToEndAsync();
 
-            // Parse items from JSON using the updated factory
             var items = _factory.Create(json);
 
-            // Store in memory BEFORE approval
             await memoryRepo.SaveAsync(items);
 
-            // Show preview screen
             return View("Preview", items);
         }
 
-        // ---------------------------------------------------------
-        // STEP 2: User clicks “Commit to Database”
-        // Save Restaurants → Remap IDs → Save MenuItems
+
    
 
 [HttpPost]
@@ -76,7 +68,7 @@ namespace HomeAssignment.Controllers
         {
             zip = new ZipArchive(imagesZip.OpenReadStream(), ZipArchiveMode.Read);
 
-            // Collect entry names for debugging (we’ll use if matching fails)
+          
             entryNames = zip.Entries.Select(e => e.FullName).ToList();
         }
 
@@ -94,7 +86,7 @@ namespace HomeAssignment.Controllers
 
             if (zip != null)
             {
-                // We want ANY image file inside folder "item-{index}" (any depth)
+          
                 var folderToken = $"/item-{index}/";
                 var folderToken2 = $"item-{index}/";
 
@@ -102,13 +94,13 @@ namespace HomeAssignment.Controllers
                 {
                     var n = Norm(e.FullName);
 
-                    // must contain item-x as a folder
+                   
                     bool inFolder = n.Contains(folderToken) || n.StartsWith(folderToken2);
 
-                    // must be a file (not folder)
+                   
                     bool isFile = !n.EndsWith("/");
 
-                    // must be an image extension
+                   
                     var ext = Path.GetExtension(n);
                     bool isImage = ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".webp";
 
@@ -133,7 +125,6 @@ namespace HomeAssignment.Controllers
                 }
             }
 
-            // fallback
             if (string.IsNullOrEmpty(imageUrl) && System.IO.File.Exists(defaultImagePath))
                 imageUrl = defaultRelative;
 
@@ -141,7 +132,6 @@ namespace HomeAssignment.Controllers
             else if (item is MenuItem m) m.ImageUrl = imageUrl;
         }
 
-        // 🔥 DEBUG: If ZIP was uploaded but we matched ZERO images, show what's inside the ZIP
         if (zip != null && !anyZipImageMatched)
         {
             var sample = entryNames.Take(50);
@@ -159,17 +149,14 @@ namespace HomeAssignment.Controllers
 
 
 
-    // ---------------------------------------------------------
-    // STEP 3: (Assignment AA4.3) Upload ZIP of images
-    // Placeholder — You will implement next
-    // ---------------------------------------------------------
+
     [HttpPost]
         public async Task<IActionResult> UploadImages(IFormFile imagesZip)
         {
             if (imagesZip == null || imagesZip.Length == 0)
                 return BadRequest("No ZIP uploaded");
 
-            // TODO: Extract ZIP → Save images → Map to item IDs → Store URL in DB
+          
 
             return Ok("ZIP upload handler placeholder (AA4.3)");
         }
@@ -184,7 +171,6 @@ namespace HomeAssignment.Controllers
             if (!list.Any())
                 return BadRequest("No items in memory. Import JSON first.");
 
-            // Path to default image
             var defaultImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "default.jpg");
             if (!System.IO.File.Exists(defaultImagePath))
                 return NotFound("Default image not found at wwwroot/images/default.jpg");

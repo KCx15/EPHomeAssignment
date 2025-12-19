@@ -18,11 +18,7 @@ namespace HomeAssignment.Controllers
             _db = dbRepo;
         }
 
-        // -------------------------------------------------------------
-        // MAIN VERIFICATION PAGE
-        // Admin -> sees ALL pending restaurants
-        // Owner -> sees OWN restaurants (not approved)
-        // -------------------------------------------------------------
+
         public async Task<IActionResult> Index()
         {
             var email = HttpContext.Session.GetString("UserEmail");
@@ -31,9 +27,7 @@ namespace HomeAssignment.Controllers
 
             var items = await _db.GetAsync();
 
-            // ---------------------------------------------------------
-            // ADMIN VIEW
-            // ---------------------------------------------------------
+           
             if (email.Equals(_adminEmail, StringComparison.OrdinalIgnoreCase))
             {
                 var pendingRestaurants = items
@@ -44,9 +38,7 @@ namespace HomeAssignment.Controllers
                 return View("AdminVerify", pendingRestaurants);
             }
 
-            // ---------------------------------------------------------
-            // OWNER VIEW
-            // ---------------------------------------------------------
+
             var ownedRestaurants = items
                 .OfType<Restaurant>()
                 .Where(r => r.OwnerEmailAddress.Equals(email, StringComparison.OrdinalIgnoreCase))
@@ -55,9 +47,7 @@ namespace HomeAssignment.Controllers
             return View("OwnerRestaurants", ownedRestaurants);
         }
 
-        // -------------------------------------------------------------
-        // OWNER VIEW → Click Restaurant → See Pending MenuItems
-        // -------------------------------------------------------------
+   
         public async Task<IActionResult> RestaurantMenuItems(int id)
         {
             var items = await _db.GetAsync();
@@ -70,10 +60,7 @@ namespace HomeAssignment.Controllers
             return View("OwnerVerifyMenuItems", pendingMenuItems);
         }
 
-        // -------------------------------------------------------------
-        // APPROVE
-        // Uses ActionFilter to confirm user is in GetValidators()
-        // -------------------------------------------------------------
+       
         [HttpPost]
         [ServiceFilter(typeof(ApprovalAuthorizationFilter))]
         public async Task<IActionResult> Approve(List<string> ids)

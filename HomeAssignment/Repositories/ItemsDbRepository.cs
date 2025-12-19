@@ -13,20 +13,18 @@ namespace HomeAssignment.Repositories
             _ctx = ctx;
         }
 
-        // --------------------------------------------------------------
-        // SAVE LOGIC — Restaurants first → remap IDs → save MenuItems
-        // --------------------------------------------------------------
+
         public async Task SaveAsync(IEnumerable<IItemValidating> items)
         {
             var restaurants = new List<Restaurant>();
             var menuItems = new List<MenuItem>();
 
-            // Split items
+           
             foreach (var item in items)
             {
                 if (item is Restaurant r)
                 {
-                    r.Id = 0; // force identity insert
+                    r.Id = 0; 
                     restaurants.Add(r);
                 }
                 else if (item is MenuItem m)
@@ -35,18 +33,18 @@ namespace HomeAssignment.Repositories
                 }
             }
 
-            // 1) Save restaurants first so DB generates int Id
+            
             _ctx.Restaurants.AddRange(restaurants);
             await _ctx.SaveChangesAsync();
 
-            // 2) Map Restaurant.ExternalId ("R-1001") -> Restaurant.Id (int)
+          
             var idMap = restaurants.ToDictionary(
                 r => r.ExternalId.Trim(),
                 r => r.Id,
                 StringComparer.OrdinalIgnoreCase
             );
 
-            // 3) Remap menu items restaurant FK
+          
             foreach (var m in menuItems)
             {
                 var key = (m.RestaurantExternalId ?? "").Trim();
@@ -57,20 +55,15 @@ namespace HomeAssignment.Repositories
                 if (!idMap.TryGetValue(key, out var newDbRestaurantId))
                     throw new Exception($"MenuItem '{m.ExternalId}' refers to restaurantId '{key}', but no matching restaurant exists in JSON.");
 
-                m.RestaurantId = newDbRestaurantId; // set FK
-                                                    // Optional: clear import-only field
-                                                    // m.RestaurantExternalId = null; // can't if it's not nullable. leave it.
+                m.RestaurantId = newDbRestaurantId; 
             }
 
-            // 4) Save menu items
             _ctx.MenuItems.AddRange(menuItems);
             await _ctx.SaveChangesAsync();
         }
 
 
-        // --------------------------------------------------------------
-        // RETURN ALL ITEMS (Restaurants + MenuItems)
-        // --------------------------------------------------------------
+
         public async Task<IEnumerable<IItemValidating>> GetAsync()
         {
             var restaurants = await _ctx.Restaurants.ToListAsync();
@@ -83,9 +76,7 @@ namespace HomeAssignment.Repositories
             return list;
         }
 
-        // --------------------------------------------------------------
-        // APPROVE AN ITEM
-        // --------------------------------------------------------------
+       
         public async Task Approve(string id)
         {
             if (int.TryParse(id, out var restId))
@@ -99,7 +90,6 @@ namespace HomeAssignment.Repositories
                 }
             }
 
-            // MenuItems use GUID for Id — so check them separately
             if (Guid.TryParse(id, out var guid))
             {
                 var menuItem = await _ctx.MenuItems.FindAsync(guid);

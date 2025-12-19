@@ -33,8 +33,7 @@ public class ItemsInMemoryRepository : IItemsRepository
 
     public Task Approve(string id)
     {
-        // In-memory repo is used only for temporary storage before DB commit.
-        // Approvals are always done on the DB repository, so nothing to do here.
+       
         return Task.CompletedTask;
     }
 

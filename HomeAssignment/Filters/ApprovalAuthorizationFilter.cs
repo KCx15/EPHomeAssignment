@@ -27,7 +27,6 @@ namespace HomeAssignment.Filters
                 return;
             }
 
-            // ✅ Support both single "id" and multi "ids"
             List<string> ids = new();
 
             if (context.ActionArguments.TryGetValue("ids", out var idsObj) && idsObj is List<string> listIds)
@@ -40,7 +39,7 @@ namespace HomeAssignment.Filters
             }
             else
             {
-                // Fallback: route-based id
+            
                 var routeId = context.RouteData.Values["id"]?.ToString();
                 if (!string.IsNullOrWhiteSpace(routeId))
                     ids = new List<string> { routeId };
@@ -55,7 +54,6 @@ namespace HomeAssignment.Filters
             var items = (await _db.GetAsync()).ToList();
             bool isAdmin = email.Equals(_adminEmail, StringComparison.OrdinalIgnoreCase);
 
-            // ✅ Validate EVERY selected id
             foreach (var idStr in ids)
             {
                 if (string.IsNullOrWhiteSpace(idStr))
@@ -66,11 +64,11 @@ namespace HomeAssignment.Filters
 
                 IItemValidating? item = null;
 
-                // Restaurant: int id
+            
                 if (int.TryParse(idStr, out var restId))
                     item = items.OfType<Restaurant>().FirstOrDefault(r => r.Id == restId);
 
-                // MenuItem: Guid id
+               
                 if (item == null && Guid.TryParse(idStr, out var guid))
                     item = items.OfType<MenuItem>().FirstOrDefault(m => m.Id == guid);
 
@@ -80,7 +78,7 @@ namespace HomeAssignment.Filters
                     return;
                 }
 
-                // Admin can approve restaurants
+                
                 if (isAdmin && item is Restaurant)
                     continue;
 

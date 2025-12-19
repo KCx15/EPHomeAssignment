@@ -7,11 +7,11 @@ namespace HomeAssignment.Models
 {
     public class MenuItem : IItemValidating
     {
-        // DB PRIMARY KEY (assignment requires GUID)
+        // DB PRIMARY KEY 
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        // JSON id like "M-2001"
+        // JSON id  "M-2001"
         [Required, MaxLength(50)]
         public string ExternalId { get; set; }
 
@@ -25,12 +25,11 @@ namespace HomeAssignment.Models
         public string? Currency { get; set; }
 
 
-        // JSON restaurantId like "R-1001"
-        // Used ONLY during import for mapping
+        // JSON restaurantId  "R-1001"
         [NotMapped]
         public string RestaurantExternalId { get; set; }
 
-        // DB FK → Restaurants.Id (set during SaveAsync remapping)
+        // DB FK 
         [Required]
         public int RestaurantId { get; set; }
 

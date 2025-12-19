@@ -38,7 +38,7 @@ namespace HomeAssignment.Models
 
         public List<string> GetValidators()
         {
-            // site admin approves restaurants (your filter translates this)
+           
             return new List<string> { "SITE_ADMIN" };
         }
 

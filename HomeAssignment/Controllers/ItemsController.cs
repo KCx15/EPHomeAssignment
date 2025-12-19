@@ -13,8 +13,7 @@ namespace HomeAssignment.Controllers
             _db = dbRepo;
         }
 
-        // GET /Items/Catalog?mode=restaurants
-        // GET /Items/Catalog?mode=menu&restaurantId=5
+      
         public async Task<IActionResult> Catalog(string mode = "restaurants", int? restaurantId = null)
         {
             var allItems = await _db.GetAsync();
@@ -22,7 +21,7 @@ namespace HomeAssignment.Controllers
 
             if (string.Equals(mode, "menu", StringComparison.OrdinalIgnoreCase) && restaurantId.HasValue)
             {
-                // Approved menu items for this restaurant
+             
                 model = allItems
                     .OfType<MenuItem>()
                     .Where(m => m.RestaurantId == restaurantId.Value
@@ -35,7 +34,7 @@ namespace HomeAssignment.Controllers
             }
             else
             {
-                // Default: approved restaurants
+                
                 model = allItems
                     .OfType<Restaurant>()
                     .Where(r => r.Status == ItemStatus.Approved)
@@ -46,7 +45,7 @@ namespace HomeAssignment.Controllers
                 ViewBag.RestaurantId = null;
             }
 
-            return View(model);  // Views/Items/Catalog.cshtml
+            return View(model);  
         }
     }
 }
