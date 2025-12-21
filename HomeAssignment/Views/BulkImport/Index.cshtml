@@ -2,14 +2,76 @@
     ViewData["Title"] = "Bulk Import";
 }
 
-<h1 class="mb-4">Bulk Import</h1>
+<h2 class="mb-3">Bulk Import</h2>
 
-<div class="card p-4 shadow-sm">
-    <form asp-controller="BulkImport" asp-action="BulkImport" method="post" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="jsonFile" class="form-label">Upload JSON File:</label>
-            <input type="file" class="form-control" id="jsonFile" name="jsonFile" />
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-    </form>
+<p>
+    Upload a JSON file containing Restaurants and MenuItems.
+    The data will be previewed before being saved.
+</p>
+
+<hr />
+
+
+<h4 class="mt-4">Sample JSON Format</h4>
+
+<p class="text-muted">
+    You may copy this example, save it as <code>.json</code>, and upload it.
+</p>
+
+<div class="bg-light border rounded p-3 mb-3">
+<pre id="sampleJson" class="mb-0">
+[
+  {
+    "type": "restaurant",
+    "id": "R-3001",
+    "name": "Bella Napoli",
+    "description": "Authentic Italian pizza and pasta",
+    "ownerEmailAddress": "bella.owner@example.com",
+    "address": "12 Old Bakery Street, Valletta",
+    "phone": "+356 2100 1234"
+  },
+  {
+    "type": "menuItem",
+    "id": "M-4001",
+    "title": "Margherita Pizza",
+    "price": 8.50,
+    "currency": "EUR",
+    "restaurantId": "R-3001"
+  }
+]
+</pre>
 </div>
+
+<button class="btn btn-outline-secondary btn-sm mb-4"
+        onclick="copySampleJson()">
+    Copy Sample JSON
+</button>
+
+<hr />
+
+
+<form asp-action="BulkImport"
+      method="post"
+      enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <label class="form-label">Upload JSON file</label>
+        <input type="file"
+               name="jsonFile"
+               accept=".json"
+               class="form-control"
+               required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Upload & Preview
+    </button>
+</form>
+
+<script>
+    function copySampleJson() {
+        const text = document.getElementById("sampleJson").innerText;
+        navigator.clipboard.writeText(text);
+        alert("Sample JSON copied to clipboard!");
+    }
+</script>
